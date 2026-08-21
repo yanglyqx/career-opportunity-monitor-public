@@ -1,0 +1,40 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# Databases and runtime data
+*.sqlite
+*.sqlite3
+*.db
+data/
+logs/
+backups/
+
+# Email / OAuth credentials
+gmail-client.json
+gmail-token.json
+*credentials*.json
+*token*.json
+
+# Private candidate data
+candidate.yaml
+career_blueprints/
+application_materials/
+
+# Local outputs
+output/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
