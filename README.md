@@ -155,6 +155,17 @@ The complete demo output is also stored in:
 sample_output/demo_output.txt
 ```
 
+### Email Digest Preview
+
+The production workflow can also deliver prioritized opportunities in an HTML email digest.
+
+![Career Monitor email digest preview](sample_output/demo_digest1.png)
+(sample_output/demo_digest2.png)
+
+A standalone HTML preview is available at:
+
+`sample_output/demo_digest.html`
+
 ## Running the Demo
 
 Requires Python 3.11 or later.
