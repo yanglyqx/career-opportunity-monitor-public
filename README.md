@@ -159,12 +159,18 @@ sample_output/demo_output.txt
 
 The production workflow can also deliver prioritized opportunities in an HTML email digest.
 
-![Career Monitor email digest preview](sample_output/demo_digest1.png)
-(sample_output/demo_digest2.png)
+### Email Digest Preview
+
+The production workflow can also deliver prioritized opportunities in an HTML email digest.
+
+![Career Monitor email digest preview 1](sample_output/demo_digest.png)
+
+![Career Monitor email digest preview 2](sample_output/demo_digest2.png)
 
 A standalone HTML preview is available at:
 
 `sample_output/demo_digest.html`
+
 
 ## Running the Demo
 
