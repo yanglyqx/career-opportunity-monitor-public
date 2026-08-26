@@ -2,6 +2,10 @@ from datetime import datetime, timezone
 
 from job_monitor.analysis import assess_vacancy
 from job_monitor.models import AppConfig, InstitutionConfig, Vacancy
+from job_monitor.preference_filter import (
+    candidate_preference_decision,
+    filter_current_recommendations,
+)
 
 
 # ---------------------------------------------------------------------
@@ -41,6 +45,127 @@ DEMO_CANDIDATE = {
             "financial research",
             "policy research",
             "data visualization",
+        ],
+    },
+    "ordinary_opportunity_preferences": {
+        "enabled": True,
+        "internship": {
+            "id": "internship",
+            "action": "EXCLUDED",
+            "title_terms": ["intern", "internship"],
+            "employment_terms": ["intern", "internship"],
+        },
+        "excluded_role_families": [
+            {
+                "id": "human_resources",
+                "action": "EXCLUDED",
+                "title_terms": [
+                    "human resources",
+                    "human resource",
+                    "HR analyst",
+                    "HR operations",
+                    "recruitment",
+                    "payroll",
+                    "employee relations",
+                    "talent acquisition",
+                    "talent operations",
+                ],
+                "responsibility_terms": [
+                    "human resources",
+                    "recruitment",
+                    "payroll",
+                    "employee relations",
+                    "talent acquisition",
+                    "talent operations",
+                    "personnel administration",
+                ],
+                "keyword_terms": [
+                    "human resources",
+                    "recruitment",
+                    "payroll",
+                    "employee relations",
+                    "talent operations",
+                ],
+                "minimum_non_title_matches": 2,
+            }
+        ],
+        "deprioritized_role_families": [
+            {
+                "id": "administrative_programme_execution",
+                "action": "DEPRIORITIZED",
+                "title_terms": [
+                    "general administration",
+                    "administrative assistant",
+                    "administrative officer",
+                    "programme assistant",
+                    "program assistant",
+                    "programme coordinator",
+                    "program coordinator",
+                    "project support",
+                    "operations coordinator",
+                ],
+                "responsibility_terms": [
+                    "general administration",
+                    "administrative support",
+                    "logistics",
+                    "procurement",
+                    "scheduling",
+                    "calendar management",
+                    "budget administration",
+                    "operational support",
+                    "meeting coordination",
+                    "maintain records",
+                    "travel arrangements",
+                    "event logistics",
+                    "invoice processing",
+                    "day-to-day implementation",
+                    "day to day implementation",
+                    "work planning",
+                    "grant management",
+                    "donor reporting",
+                    "partner coordination",
+                    "supervision of consultants",
+                    "team supervision",
+                    "monitoring and evaluation",
+                    "implementation oversight",
+                ],
+                "keyword_terms": [
+                    "general administration",
+                    "administrative support",
+                    "logistics",
+                    "procurement",
+                    "scheduling",
+                    "budget administration",
+                    "operational support",
+                    "programme execution",
+                    "program execution",
+                    "grant management",
+                    "donor reporting",
+                    "partner coordination",
+                    "monitoring and evaluation",
+                    "implementation oversight",
+                ],
+                "preserve_terms": [
+                    "investment",
+                    "project development",
+                    "climate finance",
+                    "policy",
+                    "policy implementation",
+                    "financial analysis",
+                    "risk",
+                    "regulation",
+                    "regulatory",
+                    "research",
+                    "data analysis",
+                    "technical programme design",
+                    "technical program design",
+                    "programme design",
+                    "program design",
+                ],
+                "minimum_evidence_count": 2,
+                "low_value_dominance_ratio": 1.0,
+                "substantive_override_minimum": 2,
+            }
         ],
     },
 }
@@ -192,6 +317,7 @@ def main():
     )
     print()
 
+    assessed_jobs = []
     for index, vacancy in enumerate(DEMO_JOBS, start=1):
         assessment = assess_vacancy(
             vacancy,
@@ -199,6 +325,10 @@ def main():
             INSTITUTION,
             vacancy_id=index,
             analysed_at=NOW,
+        )
+        assessed_jobs.append((vacancy, assessment))
+        preference = candidate_preference_decision(
+            vacancy, CONFIG, assessment=assessment
         )
 
         print("-" * 72)
@@ -216,6 +346,7 @@ def main():
             f"   Recommended:    "
             f"{assessment.recommended_action}"
         )
+        print(f"   Preference:     {preference.status}")
         print(
             f"   Long-Term Fit:  "
             f"{assessment.career_blueprint_score:.1f}/100"
@@ -238,6 +369,14 @@ def main():
                 print(f"      - {clean_gap}")
 
         print()
+
+    current_recommendations = filter_current_recommendations(
+        (vacancy for vacancy, _ in assessed_jobs), CONFIG
+    )
+    print("CURRENT RECOMMENDATIONS AFTER PREFERENCE FILTER")
+    for vacancy in current_recommendations:
+        print(f"   - {vacancy.title}")
+    print()
 
     print("=" * 72)
     print("Demo complete.")

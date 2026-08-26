@@ -28,6 +28,8 @@ Current application fit
         +
 Long-term career relevance
         ↓
+Candidate preference filter
+        ↓
 Prioritized opportunities
         +
 Career signals
@@ -97,6 +99,76 @@ This is intentional.
 
 For example, a senior regulatory or research role may not be realistic for an early-career applicant today, but it can still reveal the responsibilities, technical skills, institutional experience, and qualifications that repeatedly appear further along that career path.
 
+## Candidate Preference Filtering
+
+The public workflow can apply a configurable, deterministic preference filter
+after assessment and before current recommendations are displayed. The filter
+supports:
+
+* excluding internships
+* excluding clearly unrelated HR roles
+* deprioritizing routine administrative or programme-execution work
+* retaining programme roles when there is enough explicit substantive evidence
+  for policy, climate finance, investment, regulation, research, financial
+  analysis, risk, or technical programme design
+
+Administrative and programme titles are not enough by themselves. A role is
+deprioritized only when its duties or extracted keywords also contain configured
+execution evidence. Likewise, an override requires at least the configured number
+of distinct substantive terms. Every decision includes the matched rule and
+evidence, making the result inspectable and reproducible.
+
+Preferences live under `candidate.ordinary_opportunity_preferences`. The demo
+contains a complete fictional example; a minimal configuration looks like:
+
+```python
+candidate = {
+    "ordinary_opportunity_preferences": {
+        "enabled": True,
+        "internship": {
+            "title_terms": ["intern", "internship"],
+            "employment_terms": ["intern", "internship"],
+        },
+        "excluded_role_families": [
+            {
+                "id": "human_resources",
+                "title_terms": ["human resources", "HR analyst", "HR operations"],
+                "responsibility_terms": ["recruitment", "payroll"],
+                "minimum_non_title_matches": 2,
+            }
+        ],
+        "deprioritized_role_families": [
+            {
+                "id": "administrative_programme_execution",
+                "title_terms": ["programme assistant", "programme coordinator"],
+                "responsibility_terms": [
+                    "general administration",
+                    "grant management",
+                    "donor reporting",
+                    "implementation oversight",
+                ],
+                "preserve_terms": [
+                    "policy",
+                    "climate finance",
+                    "investment",
+                    "regulation",
+                    "research",
+                    "financial analysis",
+                    "risk",
+                    "technical programme design",
+                ],
+                "minimum_evidence_count": 2,
+                "substantive_override_minimum": 2,
+            }
+        ],
+    }
+}
+```
+
+This layer changes only the current recommendation stream. It does not alter
+assessment scores or long-term career relevance, and it has no location or
+market-competitiveness rules. Set `enabled` to `False` to bypass it.
+
 ## Public Demo
 
 The repository includes a small deterministic demo using:
@@ -126,12 +198,14 @@ CAREER OPPORTUNITY MONITOR - PUBLIC DEMO
    Current Fit:    68.0/100
    Current Status: STRETCH BUT WORTHWHILE
    Recommended:    REVIEW
+   Preference:     RETAINED
    Long-Term Fit:  50.5/100
 
 2. Policy and Data Analyst
    Current Fit:    76.2/100
    Current Status: STRETCH BUT WORTHWHILE
    Recommended:    REVIEW
+   Preference:     RETAINED
    Long-Term Fit:  75.0/100
    Long-Term Label: SKILL BUILDING REFERENCE
 
@@ -139,6 +213,7 @@ CAREER OPPORTUNITY MONITOR - PUBLIC DEMO
    Current Fit:    56.2/100
    Current Status: MONITOR ONLY
    Recommended:    MONITOR
+   Preference:     RETAINED
    Long-Term Fit:  69.5/100
    Long-Term Label: CAREER DIRECTION SIGNAL
 
@@ -146,7 +221,13 @@ CAREER OPPORTUNITY MONITOR - PUBLIC DEMO
    Current Fit:    43.8/100
    Current Status: MONITOR ONLY
    Recommended:    MONITOR
+   Preference:     DEPRIORITIZED
    Long-Term Fit:  9.0/100
+
+CURRENT RECOMMENDATIONS AFTER PREFERENCE FILTER
+   - Junior Research Analyst
+   - Policy and Data Analyst
+   - Senior Financial Regulation Specialist
 ```
 
 The complete demo output is also stored in:
@@ -198,6 +279,8 @@ Long-term scoring
       ↓
 Category + recommended action
       ↓
+Candidate preference filtering
+      ↓
 Readable output
 ```
 
@@ -215,6 +298,7 @@ career-opportunity-monitor-public/
 │       ├── analysis.py
 │       ├── models.py
 │       ├── notification_content.py
+│       ├── preference_filter.py
 │       └── reporting.py
 │
 └── sample_output/
@@ -242,6 +326,12 @@ Defines the main data structures used for vacancies, configuration, requirement 
 ### `notification_content.py`
 
 Contains utilities for converting vacancy and assessment information into concise, readable signals.
+
+### `preference_filter.py`
+
+Applies configurable, evidence-based candidate preferences to the current
+recommendation stream without changing the underlying assessment or long-term
+career evaluation.
 
 ### `reporting.py`
 
