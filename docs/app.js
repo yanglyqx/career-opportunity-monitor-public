@@ -571,73 +571,6 @@ function updateThresholdLabels() {
   if (monitorAssessments.length) renderMonitorResults();
 }
 
-function pageText(document) {
-  document.querySelectorAll("script, style, nav, header, footer, form").forEach((node) => node.remove());
-  return (document.body?.textContent || "")
-    .replace(/[ \t]+/g, " ")
-    .replace(/\n\s*\n+/g, "\n")
-    .trim()
-    .slice(0, 30000);
-}
-
-async function vacanciesFromCareerUrl(rawUrl) {
-  const url = new URL(rawUrl);
-  if (!["http:", "https:"].includes(url.protocol)) throw new Error("Use a public http or https URL.");
-  const response = await fetch(url.href, { mode: "cors" });
-  if (!response.ok) throw new Error(`The careers page returned HTTP ${response.status}.`);
-  const html = await response.text();
-  const document = new DOMParser().parseFromString(html, "text/html");
-  const institution = url.hostname.replace(/^www\./, "").split(".")[0]
-    .replace(/[-_]/g, " ")
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
-  const candidates = [...document.querySelectorAll("a[href]")]
-    .map((anchor) => ({
-      title: anchor.textContent.replace(/\s+/g, " ").trim(),
-      url: new URL(anchor.getAttribute("href"), url.href).href,
-    }))
-    .filter((item) =>
-      item.title.length > 5 &&
-      item.url.startsWith("http") &&
-      /job|career|vacanc|position|opening|opportunit/i.test(`${item.title} ${item.url}`)
-    )
-    .filter((item, index, all) => all.findIndex((other) => other.url === item.url) === index)
-    .slice(0, 8);
-
-  if (!candidates.length) {
-    const text = pageText(document);
-    if (text.length < 250) throw new Error("No readable vacancy links were found on this page.");
-    return [{
-      institution,
-      title: document.querySelector("h1")?.textContent.trim() || document.title || "Imported opportunity",
-      official_url: url.href,
-      vacancy_identifier: "BROWSER-IMPORT-1",
-      location: "",
-      employment_type: "",
-      cleaned_text: text,
-    }];
-  }
-
-  const loaded = await Promise.allSettled(candidates.map(async (candidate, index) => {
-    const detailResponse = await fetch(candidate.url, { mode: "cors" });
-    if (!detailResponse.ok) throw new Error(`HTTP ${detailResponse.status}`);
-    const detailDocument = new DOMParser().parseFromString(await detailResponse.text(), "text/html");
-    const text = pageText(detailDocument);
-    if (text.length < 250) throw new Error("Too little readable vacancy text");
-    return {
-      institution,
-      title: detailDocument.querySelector("h1")?.textContent.trim() || candidate.title,
-      official_url: candidate.url,
-      vacancy_identifier: `BROWSER-IMPORT-${index + 1}`,
-      location: "",
-      employment_type: "",
-      cleaned_text: text,
-    };
-  }));
-  const vacancies = loaded.filter((item) => item.status === "fulfilled").map((item) => item.value);
-  if (!vacancies.length) throw new Error("Vacancy links were found, but their detail pages could not be read.");
-  return vacancies;
-}
-
 async function runMonitorBatch(vacancies) {
   pyodideRuntime.globals.set("candidate_json", JSON.stringify(candidateInput()));
   pyodideRuntime.globals.set("vacancies_json", JSON.stringify(vacancies));
@@ -676,7 +609,6 @@ async function initializePython() {
     );
     button.disabled = false;
     document.getElementById("monitor-button").disabled = false;
-    document.getElementById("source-button").disabled = false;
     buttonLabel.textContent = "Analyze opportunity";
     setText("monitor-button-label", "Run daily monitor simulation");
     status.textContent = "Scoring engine ready. Analysis runs locally in this browser.";
@@ -729,32 +661,6 @@ document.getElementById("monitor-button").addEventListener("click", async () => 
   } finally {
     button.disabled = false;
     setText("monitor-button-label", "Run daily monitor simulation");
-  }
-});
-
-document.getElementById("source-button").addEventListener("click", async () => {
-  const rawUrl = document.getElementById("career-url").value.trim();
-  const button = document.getElementById("source-button");
-  if (!rawUrl) {
-    setText("source-status", "Enter a public careers page URL first.");
-    return;
-  }
-  button.disabled = true;
-  setText("source-button-label", "Reading the careers page…");
-  setText("source-status", "Attempting direct browser access. No proxy or project server is used.");
-  try {
-    const vacancies = await vacanciesFromCareerUrl(rawUrl);
-    setText("source-status", `Found ${vacancies.length} readable opportunit${vacancies.length === 1 ? "y" : "ies"}; running the local assessment.`);
-    await runMonitorBatch(vacancies);
-    document.getElementById("monitor-results").scrollIntoView({ behavior: "smooth", block: "start" });
-  } catch (error) {
-    setText(
-      "source-status",
-      `${error instanceof Error ? error.message : String(error)} This commonly happens when a site blocks cross-origin browser requests; the installed local monitor uses dedicated adapters instead.`,
-    );
-  } finally {
-    button.disabled = false;
-    setText("source-button-label", "Inspect public careers page");
   }
 });
 

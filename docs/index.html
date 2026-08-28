@@ -253,19 +253,19 @@ Strong Python and data-visualisation skills are required. Knowledge of SQL, Bloo
               </div>
             </div>
 
-            <div class="source-import">
-              <label for="career-url">
-                Try a careers page URL <span>Experimental</span>
-                <input id="career-url" type="url" placeholder="https://organization.example/careers" />
-              </label>
-              <button id="source-button" class="secondary-button" type="button" disabled>
-                <span id="source-button-label">Inspect public careers page</span>
-                <span aria-hidden="true">↗</span>
-              </button>
-              <p id="source-status" class="engine-status" role="status">
-                Works only when the source permits direct browser access; many careers systems do not.
+            <div class="source-preview">
+              <div class="source-preview-heading">
+                <span class="pulse" aria-hidden="true"></span>
+                <div>
+                  <strong>Source ingestion demo</strong>
+                  <p>Eight saved careers-page snapshots are ready for a reliable browser demonstration.</p>
+                </div>
+              </div>
+              <p class="source-boundary">
+                In real use, the installed local monitor checks live careers sites
+                through dedicated adapters. Saved snapshots are used here because
+                most institutions block direct cross-site browser access.
               </p>
-              <div class="or-divider"><span>or use the reliable demo snapshot</span></div>
             </div>
 
             <label class="threshold-control" for="current-threshold">

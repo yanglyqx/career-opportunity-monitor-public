@@ -573,54 +573,43 @@ button:disabled {
   margin-bottom: 27px;
 }
 
-.source-import {
+.source-preview {
   margin-bottom: 28px;
-  padding-bottom: 26px;
-  border-bottom: 1px solid var(--line);
+  padding: 16px;
+  background: #edf8f3;
+  border: 1px solid #cbe9dc;
+  border-radius: 9px;
 }
 
-.source-import label > span {
-  margin-left: 5px;
-  padding: 3px 5px;
-  color: #7a4b00;
-  background: #fff4d8;
-  border-radius: 4px;
-  font-size: 8px;
-  font-weight: 850;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-button.secondary-button {
-  margin-top: 2px;
-  color: var(--navy);
-  background: white;
-  border: 1px solid #b9c7d8;
-}
-
-button.secondary-button:hover:not(:disabled) {
-  color: white;
-  background: var(--navy);
-}
-
-.or-divider {
-  margin-top: 19px;
+.source-preview-heading {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--muted);
-  font-size: 9px;
-  font-weight: 750;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  align-items: flex-start;
+  gap: 12px;
 }
 
-.or-divider::before,
-.or-divider::after {
-  content: "";
-  height: 1px;
-  flex: 1;
-  background: var(--line);
+.source-preview-heading .pulse {
+  margin-top: 5px;
+}
+
+.source-preview strong,
+.source-preview p {
+  margin: 0;
+}
+
+.source-preview-heading p {
+  margin-top: 4px;
+  color: #36503f;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.source-preview .source-boundary {
+  margin-top: 12px;
+  padding-top: 11px;
+  color: #536b5e;
+  border-top: 1px solid #cbe9dc;
+  font-size: 11px;
+  line-height: 1.5;
 }
 
 .threshold-control > span {
