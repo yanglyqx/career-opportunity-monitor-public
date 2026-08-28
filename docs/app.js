@@ -1,5 +1,7 @@
 const REPOSITORY_RAW =
   "https://raw.githubusercontent.com/yanglyqx/career-opportunity-monitor-public/main/src/job_monitor";
+const DEMO_JOBS_URL =
+  "https://raw.githubusercontent.com/yanglyqx/career-opportunity-monitor-public/main/fixtures/demo_jobs.json";
 
 const PYTHON_FILES = ["__init__.py", "models.py", "analysis.py", "preference_filter.py"];
 
@@ -193,9 +195,17 @@ def assess_browser_input(candidate_json, vacancy_json):
         "key_fit_reasons": assessment.key_fit_reasons,
         "main_gaps_or_risks": assessment.main_gaps_or_risks,
     })
+
+def assess_browser_batch(candidate_json, vacancies_json):
+    return json.dumps([
+        json.loads(assess_browser_input(candidate_json, json.dumps(vacancy)))
+        for vacancy in json.loads(vacancies_json)
+    ])
 `;
 
 let pyodideRuntime;
+let demoJobs = [];
+let monitorAssessments = [];
 
 function terms(id) {
   return document
@@ -271,6 +281,75 @@ function showError(error) {
   setText("error-message", error instanceof Error ? error.message : String(error));
 }
 
+function notificationDecision(result) {
+  const currentThreshold = Number(document.getElementById("current-threshold").value);
+  const longTermThreshold = Number(document.getElementById("long-term-threshold").value);
+  const excluded = result.preference_status === "EXCLUDED";
+  return !excluded &&
+    (result.current_score >= currentThreshold || result.long_term_score >= longTermThreshold);
+}
+
+function renderMonitorResults() {
+  const retained = monitorAssessments.filter(notificationDecision);
+  document.getElementById("monitor-empty").hidden = true;
+  document.getElementById("monitor-error").hidden = true;
+  document.getElementById("monitor-results").hidden = false;
+  document.getElementById("digest-preview").hidden = false;
+  setText("retained-count", retained.length);
+  setText("digest-count", `${retained.length} of ${monitorAssessments.length} vacancies retained`);
+
+  const list = document.getElementById("opportunity-list");
+  list.replaceChildren();
+  for (const result of monitorAssessments) {
+    const retainedForDigest = notificationDecision(result);
+    const card = document.createElement("article");
+    card.className = `opportunity-row ${retainedForDigest ? "is-retained" : "is-filtered"}`;
+    const identity = document.createElement("div");
+    const title = document.createElement("h4");
+    title.textContent = result.title;
+    const meta = document.createElement("p");
+    meta.textContent = [result.location, result.employment_type].filter(Boolean).join(" · ");
+    identity.append(title, meta);
+
+    const scores = document.createElement("div");
+    scores.className = "row-scores";
+    scores.textContent = `Current ${result.current_score.toFixed(1)} · Long-Term ${result.long_term_score.toFixed(1)}`;
+    const decision = document.createElement("span");
+    decision.className = "decision-pill";
+    decision.textContent = retainedForDigest ? "RETAINED" : "FILTERED OUT";
+    card.append(identity, scores, decision);
+    list.appendChild(card);
+  }
+
+  const digest = document.getElementById("digest-jobs");
+  const digestEmpty = document.getElementById("digest-empty");
+  digest.replaceChildren();
+  digestEmpty.hidden = retained.length !== 0;
+  for (const result of retained) {
+    const item = document.createElement("article");
+    item.className = "digest-job";
+    const heading = document.createElement("div");
+    const title = document.createElement("h3");
+    title.textContent = result.title;
+    const action = document.createElement("span");
+    action.textContent = result.recommended_action;
+    heading.append(title, action);
+    const scores = document.createElement("p");
+    scores.className = "digest-scores";
+    scores.textContent = `Current Fit ${result.current_score.toFixed(1)}/100 · Long-Term Fit ${result.long_term_score.toFixed(1)}/100`;
+    const reason = document.createElement("p");
+    reason.textContent = result.key_fit_reasons[0] || "Retained by the configured score thresholds.";
+    item.append(heading, scores, reason);
+    digest.appendChild(item);
+  }
+}
+
+function updateThresholdLabels() {
+  setText("current-threshold-value", document.getElementById("current-threshold").value);
+  setText("long-term-threshold-value", document.getElementById("long-term-threshold").value);
+  if (monitorAssessments.length) renderMonitorResults();
+}
+
 async function initializePython() {
   const status = document.getElementById("engine-status");
   const button = document.getElementById("analyze-button");
@@ -291,11 +370,16 @@ async function initializePython() {
         );
       }),
     );
+    const jobsResponse = await fetch(DEMO_JOBS_URL);
+    if (!jobsResponse.ok) throw new Error("Could not load the demo vacancies.");
+    demoJobs = await jobsResponse.json();
     await pyodideRuntime.runPythonAsync(
       `import sys\nsys.path.insert(0, "/home/pyodide")\n${pythonBridge}`,
     );
     button.disabled = false;
+    document.getElementById("monitor-button").disabled = false;
     buttonLabel.textContent = "Analyze opportunity";
+    setText("monitor-button-label", "Run daily monitor simulation");
     status.textContent = "Scoring engine ready. Analysis runs locally in this browser.";
   } catch (error) {
     buttonLabel.textContent = "Scoring engine unavailable";
@@ -330,5 +414,32 @@ document.getElementById("assessment-form").addEventListener("submit", async (eve
     buttonLabel.textContent = "Analyze opportunity";
   }
 });
+
+document.getElementById("monitor-button").addEventListener("click", async () => {
+  const button = document.getElementById("monitor-button");
+  button.disabled = true;
+  setText("monitor-button-label", "Checking institutions and scoring vacancies…");
+  try {
+    pyodideRuntime.globals.set("candidate_json", JSON.stringify(candidateInput()));
+    pyodideRuntime.globals.set("vacancies_json", JSON.stringify(demoJobs));
+    const output = await pyodideRuntime.runPythonAsync(
+      "assess_browser_batch(candidate_json, vacancies_json)",
+    );
+    monitorAssessments = JSON.parse(output);
+    renderMonitorResults();
+    document.getElementById("monitor-results").scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (error) {
+    document.getElementById("monitor-empty").hidden = true;
+    document.getElementById("monitor-results").hidden = true;
+    document.getElementById("monitor-error").hidden = false;
+    setText("monitor-error-message", error instanceof Error ? error.message : String(error));
+  } finally {
+    button.disabled = false;
+    setText("monitor-button-label", "Run daily monitor simulation");
+  }
+});
+
+document.getElementById("current-threshold").addEventListener("input", updateThresholdLabels);
+document.getElementById("long-term-threshold").addEventListener("input", updateThresholdLabels);
 
 initializePython();

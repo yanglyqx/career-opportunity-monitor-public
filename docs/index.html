@@ -207,6 +207,99 @@ is preferred. Knowledge of Python and financial markets is an advantage.</textar
           </div>
         </aside>
       </section>
+
+      <section class="monitor-demo" aria-labelledby="monitor-title">
+        <div class="monitor-intro">
+          <div>
+            <p class="eyebrow">End-to-end workflow</p>
+            <h2 id="monitor-title">Simulate a daily monitoring run</h2>
+            <p>
+              See how the local system checks target institutions, evaluates new
+              vacancies against the same candidate profile, and only retains roles
+              that cross your notification thresholds.
+            </p>
+          </div>
+          <div class="workflow-strip" aria-label="Monitoring workflow">
+            <span>Monitor</span><i aria-hidden="true">→</i>
+            <span>Analyze</span><i aria-hidden="true">→</i>
+            <span>Filter</span><i aria-hidden="true">→</i>
+            <span>Notify</span>
+          </div>
+        </div>
+
+        <div class="monitor-surface">
+          <div class="monitor-controls">
+            <div class="section-heading">
+              <span>03</span>
+              <div>
+                <h2>Notification rules</h2>
+                <p>A role is retained when either score reaches its threshold.</p>
+              </div>
+            </div>
+
+            <label class="threshold-control" for="current-threshold">
+              <span>Minimum Current Fit <strong id="current-threshold-value">60</strong></span>
+              <input id="current-threshold" type="range" min="0" max="100" value="60" />
+            </label>
+            <label class="threshold-control" for="long-term-threshold">
+              <span>Minimum Long-Term Fit <strong id="long-term-threshold-value">60</strong></span>
+              <input id="long-term-threshold" type="range" min="0" max="100" value="60" />
+            </label>
+
+            <button id="monitor-button" type="button" disabled>
+              <span id="monitor-button-label">Loading monitoring engine…</span>
+              <span aria-hidden="true">→</span>
+            </button>
+            <p class="engine-status">Uses four representative vacancies from the repository fixtures.</p>
+          </div>
+
+          <div class="monitor-output" aria-live="polite">
+            <div id="monitor-empty" class="monitor-empty">
+              <p class="eyebrow">Daily run preview</p>
+              <h3>Ready to scan the demo institutions</h3>
+              <p>The simulation compresses a scheduled monitoring cycle into one click.</p>
+            </div>
+
+            <div id="monitor-results" hidden>
+              <div class="run-summary">
+                <div><strong id="institutions-count">4</strong><span>institutions checked</span></div>
+                <div><strong id="vacancies-count">4</strong><span>vacancies analyzed</span></div>
+                <div><strong id="retained-count">0</strong><span>retained for digest</span></div>
+              </div>
+              <div class="run-log">
+                <span class="pulse" aria-hidden="true"></span>
+                <p><strong>Run complete</strong><br />Scored locally with no external AI service.</p>
+              </div>
+              <div id="opportunity-list" class="opportunity-list"></div>
+            </div>
+
+            <div id="monitor-error" class="monitor-error" hidden>
+              <p class="eyebrow">Simulation unavailable</p>
+              <p id="monitor-error-message"></p>
+            </div>
+          </div>
+        </div>
+
+        <section id="digest-preview" class="digest-preview" hidden aria-labelledby="digest-title">
+          <div class="digest-heading">
+            <div>
+              <p class="eyebrow">Generated notification</p>
+              <h2 id="digest-title">Email digest preview</h2>
+            </div>
+            <span id="digest-count" class="digest-count"></span>
+          </div>
+          <div class="email-frame">
+            <div class="email-meta">
+              <p><span>From</span> Career Opportunity Monitor</p>
+              <p><span>Subject</span> Opportunities worth your attention</p>
+            </div>
+            <div id="digest-jobs" class="digest-jobs"></div>
+            <p id="digest-empty" class="digest-empty" hidden>
+              No vacancies crossed the current thresholds, so no email would be sent.
+            </p>
+          </div>
+        </section>
+      </section>
     </main>
 
     <footer>

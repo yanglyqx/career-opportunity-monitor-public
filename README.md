@@ -199,9 +199,12 @@ The repository also includes a fully client-side interactive version:
 **[Open the interactive demo](https://yanglyqx.github.io/career-opportunity-monitor-public/)**
 
 Users can enter a candidate profile, paste a vacancy description, and run the
-same rule-based assessment directly in the browser. Python runs locally through
-Pyodide: the page has no application backend, requires no account or API key,
-and does not send candidate or vacancy inputs to a project server.
+same rule-based assessment directly in the browser. The page also simulates a
+complete daily monitoring cycle across four representative vacancies: users can
+adjust notification thresholds, inspect which roles are retained, and preview
+the resulting email digest. Python runs locally through Pyodide: the page has no
+application backend, requires no account or API key, and does not send candidate
+or vacancy inputs to a project server.
 
 ### Example Output
 
