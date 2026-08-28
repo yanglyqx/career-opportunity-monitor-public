@@ -175,6 +175,7 @@ The repository includes a small deterministic demo using:
 
 * one fictional early-career candidate profile
 * four synthetic vacancies
+* editable candidate and vacancy input files
 * no private database
 * no production configuration
 * no email credentials
@@ -260,6 +261,45 @@ python demo.py
 
 The demo uses synthetic data and runs locally without external services.
 
+### Use Your Own Profile and Vacancies
+
+The default command remains a zero-configuration demo. To personalize the
+analysis, copy the example candidate file and edit the copy:
+
+```bash
+cp examples/candidate.example.yaml candidate.yaml
+```
+
+On Windows PowerShell:
+
+```powershell
+Copy-Item examples\candidate.example.yaml candidate.yaml
+```
+
+Then create a JSON file containing one or more vacancies. Each vacancy only
+requires a title and the job-description text:
+
+```json
+[
+  {
+    "title": "Risk Analyst",
+    "location": "Hong Kong",
+    "employment_type": "Full-time",
+    "cleaned_text": "Paste the vacancy description here."
+  }
+]
+```
+
+Run the same assessment workflow with the supplied files:
+
+```bash
+python demo.py --candidate candidate.yaml --jobs jobs.json
+```
+
+The personal `candidate.yaml` and `jobs.json` files are ignored by Git so that
+local inputs are not accidentally committed. The example files remain
+fictional and safe to publish.
+
 ## Core Workflow
 
 At the code level, the public demo follows this simplified pipeline:
@@ -293,9 +333,16 @@ career-opportunity-monitor-public/
 ├── pyproject.toml
 ├── README.md
 │
+├── examples/
+│   └── candidate.example.yaml
+│
+├── fixtures/
+│   └── demo_jobs.json
+│
 ├── src/
 │   └── job_monitor/
 │       ├── analysis.py
+│       ├── input_files.py
 │       ├── models.py
 │       ├── notification_content.py
 │       ├── preference_filter.py
@@ -323,6 +370,11 @@ Contains the main vacancy-assessment logic, including:
 
 Defines the main data structures used for vacancies, configuration, requirement signals, hard-filter decisions, and vacancy assessments.
 
+### `input_files.py`
+
+Loads and validates editable candidate YAML and vacancy JSON files, then
+converts them into the same data structures used by the assessment pipeline.
+
 ### `notification_content.py`
 
 Contains utilities for converting vacancy and assessment information into concise, readable signals.
@@ -339,7 +391,9 @@ Provides report-rendering utilities for structured assessment results.
 
 ### `demo.py`
 
-Creates a fictional candidate and synthetic vacancies, runs them through the real assessment logic, and prints the resulting current-fit and long-term evaluations.
+Loads the default fictional examples or user-supplied files, runs them through
+the real assessment logic, and prints the resulting current-fit and long-term
+evaluations.
 
 ## Production Workflow
 
@@ -398,4 +452,7 @@ All candidate and vacancy data used in the public demo is fictional or synthetic
 
 This repository is a minimal public demonstration of the Career Opportunity Monitor.
 
-The current focus is on making the core decision logic transparent and reproducible rather than packaging the project as a complete end-user application.
+The current version supports both a zero-configuration fictional demo and
+configurable local analysis without requiring users to edit Python source. The
+focus remains on keeping the core decision logic transparent and reproducible
+rather than packaging the project as a complete end-user application.

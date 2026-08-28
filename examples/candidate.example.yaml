@@ -1,0 +1,145 @@
+# Fictional profile for the public demo.
+# Copy this file to candidate.yaml and edit the values for personal use.
+
+target_functions:
+  - research
+  - policy analysis
+  - data analysis
+  - risk analysis
+  - financial regulation
+
+deprioritized_functions:
+  - sales
+  - administration
+  - routine operations
+
+education_level: masters
+
+education_fields:
+  - economics
+  - finance
+  - accounting
+
+languages:
+  - English
+  - Mandarin
+
+experience_profile:
+  years_full_time: 1.5
+  supported_skills:
+    - Python
+    - data analysis
+    - econometric analysis
+    - financial research
+    - policy research
+    - data visualization
+
+# Advanced preference rules. Most users can leave these unchanged.
+ordinary_opportunity_preferences:
+  enabled: true
+  internship:
+    id: internship
+    action: EXCLUDED
+    title_terms: [intern, internship]
+    employment_terms: [intern, internship]
+
+  excluded_role_families:
+    - id: human_resources
+      action: EXCLUDED
+      title_terms:
+        - human resources
+        - human resource
+        - HR analyst
+        - HR operations
+        - recruitment
+        - payroll
+        - employee relations
+        - talent acquisition
+        - talent operations
+      responsibility_terms:
+        - human resources
+        - recruitment
+        - payroll
+        - employee relations
+        - talent acquisition
+        - talent operations
+        - personnel administration
+      keyword_terms:
+        - human resources
+        - recruitment
+        - payroll
+        - employee relations
+        - talent operations
+      minimum_non_title_matches: 2
+
+  deprioritized_role_families:
+    - id: administrative_programme_execution
+      action: DEPRIORITIZED
+      title_terms:
+        - general administration
+        - administrative assistant
+        - administrative officer
+        - programme assistant
+        - program assistant
+        - programme coordinator
+        - program coordinator
+        - project support
+        - operations coordinator
+      responsibility_terms:
+        - general administration
+        - administrative support
+        - logistics
+        - procurement
+        - scheduling
+        - calendar management
+        - budget administration
+        - operational support
+        - meeting coordination
+        - maintain records
+        - travel arrangements
+        - event logistics
+        - invoice processing
+        - day-to-day implementation
+        - day to day implementation
+        - work planning
+        - grant management
+        - donor reporting
+        - partner coordination
+        - supervision of consultants
+        - team supervision
+        - monitoring and evaluation
+        - implementation oversight
+      keyword_terms:
+        - general administration
+        - administrative support
+        - logistics
+        - procurement
+        - scheduling
+        - budget administration
+        - operational support
+        - programme execution
+        - program execution
+        - grant management
+        - donor reporting
+        - partner coordination
+        - monitoring and evaluation
+        - implementation oversight
+      preserve_terms:
+        - investment
+        - project development
+        - climate finance
+        - policy
+        - policy implementation
+        - financial analysis
+        - risk
+        - regulation
+        - regulatory
+        - research
+        - data analysis
+        - technical programme design
+        - technical program design
+        - programme design
+        - program design
+      minimum_evidence_count: 2
+      low_value_dominance_ratio: 1.0
+      substantive_override_minimum: 2
