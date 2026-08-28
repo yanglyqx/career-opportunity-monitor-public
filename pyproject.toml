@@ -10,9 +10,6 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 
-[project.optional-dependencies]
-ai = ["openai>=1.50"]
-
 [tool.setuptools.packages.find]
 where = ["src"]
 
