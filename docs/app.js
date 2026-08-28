@@ -419,6 +419,116 @@ function careerNarrative(result) {
   return `This role makes a possible direction more specific: build a career combining ${functionPhrase} with subject expertise in ${subjectPhrase}, producing evidence that informs consequential decisions.`;
 }
 
+function normalizedSignal(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function signalFrequencies(roles) {
+  const counts = new Map();
+  for (const role of roles) {
+    const roleSignals = unique([
+      ...(role.functional_keywords || []),
+      ...(role.subject_matter_keywords || []),
+      ...(role.mandatory_qualifications || []),
+      ...(role.preferred_qualifications || []),
+    ].map(normalizedSignal));
+    for (const signal of roleSignals) counts.set(signal, (counts.get(signal) || 0) + 1);
+  }
+  return [...counts.entries()]
+    .map(([label, count]) => ({ label, count }))
+    .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label));
+}
+
+function candidateHasSignal(signal, candidate) {
+  const evidence = [
+    ...candidate.target_functions,
+    ...candidate.education_fields,
+    ...candidate.experience_profile.supported_skills,
+  ].map(normalizedSignal);
+  return evidence.some((item) => item === signal || item.includes(signal) || signal.includes(item));
+}
+
+function replaceList(id, values, fallback) {
+  const list = document.getElementById(id);
+  list.replaceChildren();
+  for (const value of values.length ? values : [fallback]) {
+    const item = document.createElement("li");
+    item.textContent = value;
+    list.appendChild(item);
+  }
+}
+
+function renderDirectionSynthesis() {
+  const roles = monitorAssessments
+    .filter((result) => result.long_term_score >= 60)
+    .sort((left, right) => right.long_term_score - left.long_term_score)
+    .slice(0, 5);
+  const candidate = candidateInput();
+  const frequencies = signalFrequencies(roles);
+  const recurring = frequencies.filter((item) => item.count >= 2).slice(0, 8);
+  const foundations = recurring.filter((item) => candidateHasSignal(item.label, candidate));
+  const priorities = recurring.filter((item) => !candidateHasSignal(item.label, candidate));
+  setText("synthesis-sample", `${roles.length} long-term-relevant role${roles.length === 1 ? "" : "s"}`);
+
+  const frequencyList = document.getElementById("recurring-signals");
+  frequencyList.replaceChildren();
+  const displayed = recurring.length ? recurring : frequencies.slice(0, 6);
+  for (const item of displayed) {
+    const row = document.createElement("div");
+    const label = document.createElement("span");
+    label.textContent = item.label;
+    const count = document.createElement("strong");
+    count.textContent = `${item.count}/${roles.length}`;
+    row.append(label, count);
+    frequencyList.appendChild(row);
+  }
+  if (!displayed.length) {
+    const empty = document.createElement("p");
+    empty.textContent = "Not enough structured signals were extracted for comparison.";
+    frequencyList.appendChild(empty);
+  }
+
+  replaceList(
+    "existing-foundations",
+    foundations.slice(0, 5).map((item) => `${item.label} appears in ${item.count} roles and is already represented in your profile.`),
+    "No recurring signal maps cleanly to the current profile yet; review the extracted candidate evidence.",
+  );
+  const requiredYears = roles
+    .map((role) => role.required_experience_years ?? role.preferred_experience_years)
+    .filter((years) => years != null);
+  const priorityCopy = priorities.slice(0, 5)
+    .map((item) => `Build concrete work evidence in ${item.label}; it appears in ${item.count} of the compared roles.`);
+  if (requiredYears.length) {
+    const minimum = Math.min(...requiredYears);
+    const maximum = Math.max(...requiredYears);
+    priorityCopy.unshift(`Use the next roles to build toward the recurring experience range of ${minimum}${minimum === maximum ? "" : `–${maximum}`} years.`);
+  }
+  replaceList(
+    "building-priorities",
+    priorityCopy.slice(0, 5),
+    "The compared roles do not reveal a repeated missing capability yet; a larger monitoring history would improve this signal.",
+  );
+
+  const topFunctions = frequencies
+    .filter((item) => roles.some((role) => (role.functional_keywords || []).map(normalizedSignal).includes(item.label)))
+    .slice(0, 3)
+    .map((item) => item.label);
+  const topSubjects = frequencies
+    .filter((item) => roles.some((role) => (role.subject_matter_keywords || []).map(normalizedSignal).includes(item.label)))
+    .slice(0, 3)
+    .map((item) => item.label);
+  const functionText = topFunctions.length ? topFunctions.join(", ") : "evidence-led analysis";
+  const subjectText = topSubjects.length ? topSubjects.join(", ") : "institutional and market questions";
+  setText(
+    "emerging-narrative-text",
+    `A plausible direction is work that combines ${functionText} with growing expertise in ${subjectText}. Near-term roles are most useful when they deepen reproducible analytical delivery and show that your work can inform institutional decisions; over time, that evidence can support broader ownership in the same domain.`,
+  );
+  setText(
+    "narrative-basis",
+    `Based on ${roles.map((role) => role.title).join("; ")}. Treat this as a hypothesis to refine as more vacancies are monitored.`,
+  );
+}
+
 function renderFutureDirection() {
   const threshold = 80;
   const roles = monitorAssessments.filter((result) => result.long_term_score >= threshold);
@@ -470,6 +580,7 @@ function renderFutureDirection() {
     article.append(header, grid);
     container.appendChild(article);
   }
+  renderDirectionSynthesis();
 }
 
 function vacancyInput() {

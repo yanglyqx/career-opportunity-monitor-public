@@ -208,7 +208,10 @@ extraction is deliberately limited to evidence such as education, skills and
 languages; career preferences remain user-controlled through target functions
 and an optional plain-language description of the work they want. Roles with a
 Long-Term Fit of 80 or above also feed a separate 3–5 year direction view that
-summarizes capabilities to build and the career narrative implied by the JD. Python
+summarizes capabilities to build and the career narrative implied by the JD.
+The demo then compares several long-term-relevant roles to surface recurring
+requirements, distinguish existing foundations from capability-building priorities,
+and draft an evidence-linked exploratory career narrative. Python
 runs locally through Pyodide: the page has no application backend, requires no
 account or API key, and does not send candidate or vacancy inputs to a project
 server.

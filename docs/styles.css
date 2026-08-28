@@ -1078,6 +1078,122 @@ input[type="range"] {
   border-radius: 10px;
 }
 
+.direction-synthesis {
+  margin-top: 24px;
+  padding-top: 28px;
+  border-top: 1px solid #d7c6a8;
+}
+
+.synthesis-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.synthesis-heading h3 {
+  margin: 6px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.synthesis-heading > span {
+  color: #78684e;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.synthesis-method {
+  max-width: 760px;
+  margin: 10px 0 20px;
+  color: #786f61;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.synthesis-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.synthesis-grid > section {
+  padding: 18px;
+  background: rgba(255, 253, 248, .82);
+  border: 1px solid #ded2bd;
+  border-radius: 9px;
+}
+
+.synthesis-grid h4 {
+  margin: 0 0 13px;
+  font-size: 13px;
+}
+
+.synthesis-grid ul {
+  margin: 0;
+  padding-left: 17px;
+}
+
+.synthesis-grid li,
+.signal-frequency-list p {
+  margin: 7px 0;
+  color: #5d5549;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.signal-frequency-list {
+  display: grid;
+  gap: 7px;
+}
+
+.signal-frequency-list > div {
+  padding: 7px 9px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #554f45;
+  background: white;
+  border: 1px solid #eadfce;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.signal-frequency-list strong {
+  color: #765b31;
+}
+
+.emerging-narrative {
+  margin-top: 16px;
+  padding: 22px;
+  color: white;
+  background: #765b31;
+  border-radius: 10px 3px 10px 3px;
+}
+
+.emerging-narrative > span {
+  color: #f2dfbd;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.emerging-narrative p {
+  max-width: 900px;
+  margin: 9px 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 20px;
+  line-height: 1.45;
+}
+
+.emerging-narrative small {
+  color: #ead9bb;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
 .digest-job {
   padding: 22px 0;
   border-bottom: 1px solid var(--line);
@@ -1321,6 +1437,15 @@ footer a {
 
   .future-role-grid {
     grid-template-columns: 1fr;
+  }
+
+  .synthesis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .synthesis-heading {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .score-card {
