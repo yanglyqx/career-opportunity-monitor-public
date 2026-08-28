@@ -1,0 +1,82 @@
+[
+  {
+    "institution": "Northbridge Monetary Institute",
+    "title": "Financial Markets Data Analyst",
+    "official_url": "https://example.com/nmi/financial-markets-data-analyst",
+    "vacancy_identifier": "NMI-DA-2026",
+    "location": "London",
+    "employment_type": "Full-time",
+    "closing_date": "2026-09-18",
+    "cleaned_text": "About the role\nThe analyst supports surveillance of fixed-income, foreign-exchange and derivatives markets, turning market and supervisory data into briefings for policy committees.\n\nKey responsibilities\n- Acquire, validate and reconcile large market datasets.\n- Develop reproducible analysis in Python or R and maintain dashboards.\n- Investigate unusual market movements and prepare research notes.\n- Work with economists, risk specialists and technology colleagues.\n\nRequirements\nA master's degree in economics, finance, statistics, data science or a related quantitative field is required. Candidates should have one to three years of relevant analytical experience; internships and research assistant experience may be considered. Strong Python and data-visualisation skills are required. SQL, Bloomberg or Refinitiv is desirable. Excellent written and spoken English is mandatory."
+  },
+  {
+    "institution": "Meridian Development Finance Corporation",
+    "title": "Climate Finance Associate",
+    "official_url": "https://example.com/mdfc/climate-finance-associate",
+    "vacancy_identifier": "MDFC-CFA-114",
+    "location": "Singapore",
+    "employment_type": "Fixed-term",
+    "closing_date": "2026-09-12",
+    "cleaned_text": "The Associate supports origination and assessment of renewable-energy and resilient-infrastructure investments across emerging markets.\n\nResponsibilities include reviewing project financial models, conducting sector and country research, assessing climate additionality, preparing investment committee materials, and coordinating due diligence.\n\nApplicants must hold a bachelor's or master's degree in finance, economics, engineering, environmental studies or public policy. At least three years of professional experience in project finance, investment analysis, sustainable finance or development finance is required. Advanced Excel and financial modelling are mandatory. Python or climate-data experience is an advantage. Fluency in English is required; French or Spanish is desirable. CFA progress is preferred."
+  },
+  {
+    "institution": "Arcadia Securities Commission",
+    "title": "Senior Regulatory Policy Specialist",
+    "official_url": "https://example.com/asc/senior-regulatory-policy-specialist",
+    "vacancy_identifier": "ASC-RPS-88",
+    "location": "Toronto",
+    "employment_type": "Full-time",
+    "closing_date": "2026-09-30",
+    "cleaned_text": "The Specialist leads policy development relating to market conduct, digital assets and systemic risk, advises commissioners and represents the authority internationally.\n\nThe role analyses legislative and market developments, drafts consultation papers, assesses industry submissions, leads impact studies and supervises two analysts.\n\nA postgraduate degree in economics, finance, law or public policy is required. Applicants must have at least eight years of relevant experience in financial regulation, securities markets or economic policy, including complex-project leadership. Excellent English drafting is mandatory. A legal qualification or CFA designation is desirable. French is an asset."
+  },
+  {
+    "institution": "Aurora Energy Transition Agency",
+    "title": "Energy Transition Research Officer",
+    "official_url": "https://example.com/aeta/energy-transition-research-officer",
+    "vacancy_identifier": "AETA-ERO-31",
+    "location": "Copenhagen",
+    "employment_type": "Full-time",
+    "closing_date": "2026-10-04",
+    "cleaned_text": "The Officer produces evidence on electricity markets, industrial decarbonisation and renewable-energy investment. Responsibilities include assembling country-level datasets, conducting econometric and policy analysis, maintaining interactive visualisations, drafting technical reports and presenting findings.\n\nA master's degree in economics, public policy, energy studies, statistics or a quantitative discipline is required. Two years of research or analytical experience is preferred; doctoral research and substantive internships may count. Proficiency in Python, R or Stata and data visualisation is required. Fluent English is essential. Danish is not required."
+  },
+  {
+    "institution": "Helix Global Health Foundation",
+    "title": "Monitoring, Evaluation and Learning Analyst",
+    "official_url": "https://example.com/hghf/mel-analyst",
+    "vacancy_identifier": "HGHF-MEL-204",
+    "location": "Geneva",
+    "employment_type": "Fixed-term",
+    "closing_date": "2026-09-09",
+    "cleaned_text": "The analyst supports monitoring, evaluation and learning for global health grants, maintaining indicator frameworks, validating partner submissions, analysing performance and preparing donor reports.\n\nCandidates must have a bachelor's degree in public health, economics, statistics, international development or a related field and at least two years of experience in monitoring and evaluation, programme analytics or applied research. Advanced Excel and quantitative analysis are required. Power BI, Python or R is desirable. English is mandatory and French is strongly preferred."
+  },
+  {
+    "institution": "Terra Infrastructure Partners",
+    "title": "Investment Risk Analyst",
+    "official_url": "https://example.com/tip/investment-risk-analyst",
+    "vacancy_identifier": "TIP-IRA-17",
+    "location": "Hong Kong",
+    "employment_type": "Full-time",
+    "closing_date": "2026-09-22",
+    "cleaned_text": "The Analyst supports portfolio risk oversight for infrastructure and real-asset investments, reviews transaction models, monitors exposures and prepares risk committee reporting.\n\nA bachelor's degree in finance, economics, accounting, mathematics or engineering is required. One to three years of experience in investment analysis, risk, transaction advisory or audit is preferred. Strong Excel and financial modelling are mandatory. Python, SQL, Power BI and progress toward CFA or FRM are advantageous. Fluent English is required; Cantonese or Mandarin is preferred."
+  },
+  {
+    "institution": "Horizon Consumer Intelligence Group",
+    "title": "Customer Insights Data Scientist",
+    "official_url": "https://example.com/hcig/customer-insights-data-scientist",
+    "vacancy_identifier": "HCIG-DS-402",
+    "location": "Amsterdam",
+    "employment_type": "Full-time",
+    "closing_date": "2026-10-10",
+    "cleaned_text": "The Data Scientist develops predictive models for retention, pricing and marketing effectiveness, designs experiments, builds machine-learning pipelines and communicates commercial recommendations.\n\nApplicants need a master's degree in computer science, statistics, econometrics or a related quantitative discipline and at least four years of industry data-science experience. Expert Python and SQL are mandatory, together with cloud-platform and machine-learning deployment experience. Causal inference is preferred. Fluent English is required."
+  },
+  {
+    "institution": "Civic Arts and Culture Trust",
+    "title": "Programme Operations Coordinator",
+    "official_url": "https://example.com/cact/programme-operations-coordinator",
+    "vacancy_identifier": "CACT-POC-09",
+    "location": "Melbourne",
+    "employment_type": "Full-time",
+    "closing_date": "2026-09-15",
+    "cleaned_text": "The Coordinator provides administrative support to arts funding programmes, including scheduling meetings, arranging travel, processing invoices, maintaining grant records, coordinating events and preparing standard correspondence.\n\nA bachelor's degree or equivalent experience is preferred. One year of administrative or programme-support experience is desirable. Strong organisational, communication and Microsoft Office skills are required. No technical qualification is required. Fluent English is mandatory."
+  }
+]

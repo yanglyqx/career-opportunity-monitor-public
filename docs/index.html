@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net" />
     <link rel="stylesheet" href="styles.css" />
     <script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.9.0/mammoth.browser.min.js"></script>
   </head>
   <body>
     <header class="topbar">
@@ -57,6 +58,18 @@
               <h2>Candidate profile</h2>
               <p>Use comma-separated terms where applicable.</p>
             </div>
+          </div>
+
+          <div class="cv-upload">
+            <div>
+              <strong>Start from a CV</strong>
+              <p>Upload a PDF or Word (.docx) file to draft the fields below locally.</p>
+            </div>
+            <label class="upload-button" for="cv-upload">
+              Choose CV
+              <input id="cv-upload" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+            </label>
+            <p id="cv-status" class="cv-status" role="status">Nothing is uploaded or retained.</p>
           </div>
 
           <div class="field-grid">
@@ -108,11 +121,11 @@
           <div class="field-grid">
             <label>
               Job title
-              <input id="job-title" value="Policy and Data Analyst" />
+              <input id="job-title" value="Financial Markets Data Analyst" />
             </label>
             <label>
               Location
-              <input id="job-location" value="Singapore" />
+              <input id="job-location" value="London" />
             </label>
           </div>
           <label>
@@ -126,18 +139,21 @@
           </label>
           <label>
             Job description
-            <textarea id="job-description" rows="13">The analyst will support financial-sector policy research,
-regulatory analysis and quantitative assessment.
+            <textarea id="job-description" rows="18">About the role
+The Financial Markets Data Analyst supports surveillance of fixed-income, foreign-exchange and derivatives markets. The team turns market and supervisory data into briefings for policy committees and senior decision makers.
 
-Responsibilities include collecting and cleaning datasets,
-analysing market developments, producing data visualisations,
-and drafting research notes.
+Key responsibilities
+• Acquire, validate and reconcile large market datasets from commercial and regulatory sources.
+• Develop reproducible analysis in Python or R and maintain monitoring dashboards.
+• Investigate unusual market movements and prepare concise research notes.
+• Work with economists, risk specialists and technology colleagues to improve data quality.
 
-A postgraduate degree in economics, finance or another
-quantitative discipline is required.
+Requirements
+A master's degree in economics, finance, statistics, data science or a related quantitative field is required.
 
-At least two years of relevant research or analytical experience
-is preferred. Knowledge of Python and financial markets is an advantage.</textarea>
+Candidates should have one to three years of relevant analytical experience; internships and research assistant experience may be considered.
+
+Strong Python and data-visualisation skills are required. Knowledge of SQL, Bloomberg or Refinitiv is desirable. Excellent written and spoken English is mandatory.</textarea>
           </label>
 
           <button id="analyze-button" type="submit" disabled>
@@ -233,8 +249,23 @@ is preferred. Knowledge of Python and financial markets is an advantage.</textar
               <span>03</span>
               <div>
                 <h2>Notification rules</h2>
-                <p>A role is retained when either score reaches its threshold.</p>
+              <p>A role is retained when either score reaches its threshold.</p>
               </div>
+            </div>
+
+            <div class="source-import">
+              <label for="career-url">
+                Try a careers page URL <span>Experimental</span>
+                <input id="career-url" type="url" placeholder="https://organization.example/careers" />
+              </label>
+              <button id="source-button" class="secondary-button" type="button" disabled>
+                <span id="source-button-label">Inspect public careers page</span>
+                <span aria-hidden="true">↗</span>
+              </button>
+              <p id="source-status" class="engine-status" role="status">
+                Works only when the source permits direct browser access; many careers systems do not.
+              </p>
+              <div class="or-divider"><span>or use the reliable demo snapshot</span></div>
             </div>
 
             <label class="threshold-control" for="current-threshold">
@@ -250,7 +281,7 @@ is preferred. Knowledge of Python and financial markets is an advantage.</textar
               <span id="monitor-button-label">Loading monitoring engine…</span>
               <span aria-hidden="true">→</span>
             </button>
-            <p class="engine-status">Uses four representative vacancies from the repository fixtures.</p>
+            <p class="engine-status">Uses eight fictional but realistic vacancies across finance, energy, health, infrastructure, consumer data and culture.</p>
           </div>
 
           <div class="monitor-output" aria-live="polite">
@@ -262,8 +293,8 @@ is preferred. Knowledge of Python and financial markets is an advantage.</textar
 
             <div id="monitor-results" hidden>
               <div class="run-summary">
-                <div><strong id="institutions-count">4</strong><span>institutions checked</span></div>
-                <div><strong id="vacancies-count">4</strong><span>vacancies analyzed</span></div>
+                <div><strong id="institutions-count">8</strong><span>institutions checked</span></div>
+                <div><strong id="vacancies-count">8</strong><span>vacancies analyzed</span></div>
                 <div><strong id="retained-count">0</strong><span>retained for digest</span></div>
               </div>
               <div class="run-log">
