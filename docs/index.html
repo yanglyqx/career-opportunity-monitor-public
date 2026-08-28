@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Evaluate current application fit and long-term career relevance directly in your browser."
+    />
+    <title>Career Opportunity Monitor — Interactive Demo</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a
+        class="brand"
+        href="https://github.com/yanglyqx/career-opportunity-monitor-public"
+        aria-label="Career Opportunity Monitor repository"
+      >
+        <span class="brand-mark" aria-hidden="true">CM</span>
+        <span>
+          <strong>Career Opportunity Monitor</strong>
+          <small>Interactive public demo</small>
+        </span>
+      </a>
+      <a
+        class="repo-link"
+        href="https://github.com/yanglyqx/career-opportunity-monitor-public"
+      >
+        View source on GitHub
+      </a>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Local, transparent assessment</p>
+          <h1 id="page-title">Is this opportunity worth pursuing now?</h1>
+          <p>
+            Enter a candidate profile and vacancy description to compare current
+            application viability with longer-term career relevance.
+          </p>
+        </div>
+        <div class="privacy-note">
+          <span class="privacy-dot" aria-hidden="true"></span>
+          Your inputs stay in this browser. No account, API key, or server upload.
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="Opportunity assessment workspace">
+        <form id="assessment-form" class="input-panel">
+          <div class="section-heading">
+            <span>01</span>
+            <div>
+              <h2>Candidate profile</h2>
+              <p>Use comma-separated terms where applicable.</p>
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <label>
+              Education level
+              <select id="education-level">
+                <option value="bachelors">Bachelor's</option>
+                <option value="masters" selected>Master's</option>
+                <option value="doctorate">Doctorate</option>
+              </select>
+            </label>
+            <label>
+              Full-time experience (years)
+              <input id="experience-years" type="number" min="0" step="0.5" value="1.5" />
+            </label>
+          </div>
+
+          <label>
+            Education fields
+            <input id="education-fields" value="economics, finance, accounting" />
+          </label>
+          <label>
+            Target functions
+            <input
+              id="target-functions"
+              value="research, policy analysis, data analysis, risk analysis, financial regulation"
+            />
+          </label>
+          <label>
+            Supported skills
+            <input
+              id="supported-skills"
+              value="Python, data analysis, econometric analysis, financial research, policy research, data visualization"
+            />
+          </label>
+          <label>
+            Languages
+            <input id="languages" value="English, Mandarin" />
+          </label>
+
+          <div class="section-heading vacancy-heading">
+            <span>02</span>
+            <div>
+              <h2>Vacancy</h2>
+              <p>Paste the wording from the official job description.</p>
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <label>
+              Job title
+              <input id="job-title" value="Policy and Data Analyst" />
+            </label>
+            <label>
+              Location
+              <input id="job-location" value="Singapore" />
+            </label>
+          </div>
+          <label>
+            Employment type
+            <select id="employment-type">
+              <option selected>Full-time</option>
+              <option>Part-time</option>
+              <option>Internship</option>
+              <option>Contract</option>
+            </select>
+          </label>
+          <label>
+            Job description
+            <textarea id="job-description" rows="13">The analyst will support financial-sector policy research,
+regulatory analysis and quantitative assessment.
+
+Responsibilities include collecting and cleaning datasets,
+analysing market developments, producing data visualisations,
+and drafting research notes.
+
+A postgraduate degree in economics, finance or another
+quantitative discipline is required.
+
+At least two years of relevant research or analytical experience
+is preferred. Knowledge of Python and financial markets is an advantage.</textarea>
+          </label>
+
+          <button id="analyze-button" type="submit" disabled>
+            <span id="button-label">Loading scoring engine…</span>
+            <span aria-hidden="true">→</span>
+          </button>
+          <p id="engine-status" class="engine-status" role="status">
+            Preparing the browser-based Python runtime.
+          </p>
+        </form>
+
+        <aside class="results-panel" aria-live="polite">
+          <div id="empty-state" class="empty-state">
+            <div class="empty-glyph" aria-hidden="true">↗</div>
+            <p class="eyebrow">Assessment output</p>
+            <h2>Two scores, two decisions</h2>
+            <p>
+              Current Fit reflects whether applying now is realistic. Long-Term
+              Fit retains useful career signals even when a role is too senior.
+            </p>
+          </div>
+
+          <div id="results" class="results" hidden>
+            <div class="result-title">
+              <p class="eyebrow">Assessment complete</p>
+              <h2 id="result-job-title"></h2>
+              <p id="result-meta"></p>
+            </div>
+
+            <div class="score-card current-card">
+              <div>
+                <span>Current Fit</span>
+                <strong id="current-score"></strong>
+              </div>
+              <div class="score-details">
+                <span id="current-category" class="badge"></span>
+                <p>Recommended action: <strong id="recommended-action"></strong></p>
+                <p>Preference filter: <strong id="preference-status"></strong></p>
+              </div>
+            </div>
+
+            <div class="score-card long-term-card">
+              <div>
+                <span>Long-Term Fit</span>
+                <strong id="long-term-score"></strong>
+              </div>
+              <div class="score-details">
+                <span id="long-term-label" class="badge"></span>
+                <p>Career-direction evidence retained separately from current feasibility.</p>
+              </div>
+            </div>
+
+            <div class="evidence-block">
+              <h3>Key fit reasons</h3>
+              <ul id="fit-reasons"></ul>
+            </div>
+            <div class="evidence-block">
+              <h3>Main gaps or risks</h3>
+              <ul id="gaps"></ul>
+            </div>
+          </div>
+
+          <div id="error-state" class="error-state" hidden>
+            <p class="eyebrow">Unable to complete assessment</p>
+            <h2>Something interrupted the local scoring engine.</h2>
+            <p id="error-message"></p>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <footer>
+      <p>Rule-based public demonstration · No inputs are retained</p>
+      <a href="https://github.com/yanglyqx/career-opportunity-monitor-public">Documentation</a>
+    </footer>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>

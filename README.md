@@ -6,6 +6,8 @@ The problem is that their opportunities are not always easy to discover. Vacanci
 
 I built **Career Opportunity Monitor** to make that process more systematic.
 
+**[Try the interactive browser demo →](https://yanglyqx.github.io/career-opportunity-monitor-public/)**
+
 Users can define organizations they want to follow, monitor newly published vacancies, and evaluate those opportunities against a candidate profile. Instead of simply collecting job postings, the system summarizes and scores each role to help answer two different questions:
 
 * **What is realistically worth considering or applying to now?**
@@ -190,6 +192,17 @@ The four vacancies are designed to illustrate different cases:
 | Senior Financial Regulation Specialist | Lower current feasibility but meaningful career-direction value |
 | Operations Coordinator                 | Accessible role with weak career-direction alignment            |
 
+### Interactive Browser Demo
+
+The repository also includes a fully client-side interactive version:
+
+**[Open the interactive demo](https://yanglyqx.github.io/career-opportunity-monitor-public/)**
+
+Users can enter a candidate profile, paste a vacancy description, and run the
+same rule-based assessment directly in the browser. Python runs locally through
+Pyodide: the page has no application backend, requires no account or API key,
+and does not send candidate or vacancy inputs to a project server.
+
 ### Example Output
 
 ```text
@@ -338,6 +351,11 @@ career-opportunity-monitor-public/
 │
 ├── fixtures/
 │   └── demo_jobs.json
+│
+├── docs/
+│   ├── index.html
+│   ├── app.js
+│   └── styles.css
 │
 ├── src/
 │   └── job_monitor/
