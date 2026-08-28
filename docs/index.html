@@ -69,7 +69,7 @@
               Choose CV
               <input id="cv-upload" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
             </label>
-            <p id="cv-status" class="cv-status" role="status">Nothing is uploaded or retained.</p>
+            <p id="cv-status" class="cv-status" role="status">Nothing is uploaded or retained. CV extraction drafts evidence only; you remain in control of career preferences.</p>
           </div>
 
           <div class="field-grid">
@@ -97,6 +97,15 @@
               id="target-functions"
               value="research, policy analysis, data analysis, risk analysis, financial regulation"
             />
+          </label>
+          <label class="career-intent-field">
+            What kind of work are you looking for? <span class="optional-label">Optional</span>
+            <textarea id="career-intent" rows="5" placeholder="For example: I want analytical roles where I use financial or policy data to understand markets, risk, regulation or investment decisions. I prefer substantive research and decision support over routine administration or pure sales."></textarea>
+            <small>
+              Plain language is enough. You can mention the problems you want to work on,
+              decisions you want to support, preferred sectors, and work you want to avoid.
+            </small>
+            <span id="intent-signals" class="intent-signals">No additional preference signals yet.</span>
           </label>
           <label>
             Supported skills
@@ -329,6 +338,25 @@ Strong Python and data-visualisation skills are required. Knowledge of SQL, Bloo
               No vacancies crossed the current thresholds, so no email would be sent.
             </p>
           </div>
+        </section>
+
+        <section id="future-direction" class="future-direction" hidden aria-labelledby="future-direction-title">
+          <div class="future-direction-heading">
+            <div>
+              <p class="eyebrow">3–5 year career signals</p>
+              <h2 id="future-direction-title">What high-potential roles clarify about your direction</h2>
+              <p>
+                Roles scoring 80 or above on Long-Term Fit are treated as evidence:
+                what to build toward, and how a possible career path becomes more concrete.
+              </p>
+            </div>
+            <span id="future-direction-count" class="future-direction-count"></span>
+          </div>
+          <div id="future-direction-roles" class="future-direction-roles"></div>
+          <p id="future-direction-empty" class="future-direction-empty" hidden>
+            None of the demo roles currently reaches 80 on Long-Term Fit. Adjusting the
+            candidate profile may reveal a stronger future-direction signal.
+          </p>
         </section>
       </section>
     </main>

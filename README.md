@@ -203,7 +203,12 @@ CV, paste a vacancy description, and run the same rule-based assessment directly
 in the browser. The page also simulates a complete daily monitoring cycle across
 eight fictional but realistic vacancies from different industries: users can
 adjust notification thresholds, expand the extracted requirements and analysis,
-inspect which roles are retained, and preview a detailed email digest. Python
+inspect which roles are retained, and preview a detailed email digest. CV
+extraction is deliberately limited to evidence such as education, skills and
+languages; career preferences remain user-controlled through target functions
+and an optional plain-language description of the work they want. Roles with a
+Long-Term Fit of 80 or above also feed a separate 3–5 year direction view that
+summarizes capabilities to build and the career narrative implied by the JD. Python
 runs locally through Pyodide: the page has no application backend, requires no
 account or API key, and does not send candidate or vacancy inputs to a project
 server.

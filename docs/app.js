@@ -249,7 +249,7 @@ async function extractCvText(file) {
     for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber += 1) {
       const page = await document.getPage(pageNumber);
       const content = await page.getTextContent();
-      pages.push(content.items.map((item) => item.str).join(" "));
+      pages.push(content.items.map((item) => `${item.str}${item.hasEOL ? "\n" : " "}`).join(""));
     }
     return pages.join("\n");
   }
@@ -260,32 +260,56 @@ async function extractCvText(file) {
   throw new Error("Choose a PDF or .docx Word file.");
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function containsTerm(text, term) {
+  const pattern = escapeRegExp(term).replace(/\\ /g, "[\\s-]+");
+  return new RegExp(`(^|[^a-z0-9])${pattern}([^a-z0-9]|$)`, "i").test(text);
+}
+
 function detectedTerms(text, vocabulary) {
-  const lower = text.toLowerCase();
-  return vocabulary.filter((term) => lower.includes(term.toLowerCase()));
+  return vocabulary.filter((term) => containsTerm(text, term));
+}
+
+function cvSection(text, headings) {
+  const lines = text.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+  const headingPattern = new RegExp(`^(${headings.join("|")})(?:\\s*[:|])?$`, "i");
+  const anyHeading = /^(education|academic background|qualifications|experience|professional experience|employment|work experience|skills|technical skills|technical competencies|languages|language skills|certifications|projects|publications|awards|interests)(?:\s*[:|])?$/i;
+  const start = lines.findIndex((line) => headingPattern.test(line));
+  if (start < 0) return "";
+  const output = [];
+  for (let index = start + 1; index < lines.length; index += 1) {
+    if (anyHeading.test(lines[index])) break;
+    output.push(lines[index]);
+  }
+  return output.join("\n");
 }
 
 function applyCvDraft(text) {
   const lower = text.toLowerCase();
-  const fields = detectedTerms(text, [
+  const educationText = cvSection(text, ["education", "academic background", "qualifications"]);
+  const skillsText = cvSection(text, ["skills", "technical skills", "technical competencies"]);
+  const languageText = cvSection(text, ["languages", "language skills"]);
+  const fields = detectedTerms(educationText, [
     "economics", "finance", "accounting", "statistics", "data science",
     "public policy", "computer science", "engineering", "environmental studies",
     "international development", "public health",
   ]);
-  const skills = detectedTerms(text, [
+  const skills = detectedTerms(skillsText || text, [
     "Python", "SQL", "R", "Stata", "Power BI", "Tableau", "Excel", "Bloomberg",
     "Refinitiv", "econometric analysis", "financial modelling", "data analysis",
     "data visualization", "machine learning", "policy research", "risk analysis",
   ]);
-  const languages = detectedTerms(text, [
+  let languages = detectedTerms(languageText, [
     "English", "Mandarin", "Cantonese", "French", "Spanish", "German",
     "Arabic", "Japanese", "Korean", "Portuguese",
   ]);
-  const functions = detectedTerms(text, [
-    "financial research", "policy analysis", "data analysis", "risk analysis",
-    "financial regulation", "investment analysis", "climate finance",
-    "economic research", "monitoring and evaluation", "data science",
-  ]);
+  if (!languageText) {
+    languages = detectedTerms(text, ["English", "Mandarin", "Cantonese", "French", "Spanish", "German", "Arabic", "Japanese", "Korean", "Portuguese"])
+      .filter((language) => new RegExp(`(?:native|fluent|proficient|professional|working|spoken|written|language)[^\\n.]{0,30}${escapeRegExp(language)}|${escapeRegExp(language)}[^\\n.]{0,30}(?:native|fluent|proficient|professional|working|spoken|written|language)`, "i").test(text));
+  }
   let education = "";
   if (/\b(ph\.?d|doctorate|doctoral)\b/i.test(text)) education = "doctorate";
   else if (/\b(master|m\.?sc|m\.?phil|mba)\b/i.test(text)) education = "masters";
@@ -299,7 +323,6 @@ function applyCvDraft(text) {
   if (fields.length) document.getElementById("education-fields").value = fields.join(", ");
   if (skills.length) document.getElementById("supported-skills").value = skills.join(", ");
   if (languages.length) document.getElementById("languages").value = languages.join(", ");
-  if (functions.length) document.getElementById("target-functions").value = functions.join(", ");
   if (yearMatches.length) {
     document.getElementById("experience-years").value = Math.max(...yearMatches);
   }
@@ -308,9 +331,34 @@ function applyCvDraft(text) {
     fields.length && "fields",
     skills.length && "skills",
     languages.length && "languages",
-    functions.length && "functions",
     yearMatches.length && "experience",
   ].filter(Boolean);
+}
+
+const intentTaxonomy = [
+  { label: "policy analysis", terms: ["policy", "regulation", "regulatory", "public decision"] },
+  { label: "financial research", terms: ["financial market", "markets", "finance research"] },
+  { label: "risk analysis", terms: ["risk", "prudential", "stability"] },
+  { label: "investment analysis", terms: ["investment", "portfolio", "due diligence"] },
+  { label: "data analysis", terms: ["data", "quantitative", "analytics", "evidence"] },
+  { label: "economic research", terms: ["economic", "economics", "econometric"] },
+  { label: "climate finance", terms: ["climate", "energy transition", "sustainable", "sustainability", "decarbonisation", "decarbonization"] },
+  { label: "monitoring and evaluation", terms: ["evaluation", "impact measurement", "programme performance"] },
+];
+
+function careerIntentSignals() {
+  const narrative = document.getElementById("career-intent").value.trim();
+  if (!narrative) return [];
+  return intentTaxonomy
+    .filter((signal) => signal.terms.some((term) => containsTerm(narrative, term)))
+    .map((signal) => signal.label);
+}
+
+function updateIntentSignals() {
+  const signals = careerIntentSignals();
+  setText("intent-signals", signals.length
+    ? `Preference signals recognized: ${signals.join(", ")}. These supplement Target functions during scoring.`
+    : "No additional preference signals recognized yet; Target functions will be used as entered.");
 }
 
 function terms(id) {
@@ -322,8 +370,9 @@ function terms(id) {
 }
 
 function candidateInput() {
+  const targetFunctions = [...new Set([...terms("target-functions"), ...careerIntentSignals()])];
   return {
-    target_functions: terms("target-functions"),
+    target_functions: targetFunctions,
     deprioritized_functions: ["sales", "administration", "routine operations"],
     education_level: document.getElementById("education-level").value,
     education_fields: terms("education-fields"),
@@ -334,6 +383,93 @@ function candidateInput() {
     },
     ordinary_opportunity_preferences: defaultPreferences,
   };
+}
+
+function unique(values) {
+  return [...new Set((values || []).filter(Boolean))];
+}
+
+function futureCapabilitySignals(result) {
+  const candidate = candidateInput();
+  const candidateSkills = candidate.experience_profile.supported_skills.map((value) => value.toLowerCase());
+  const roleSkills = unique([
+    ...(result.functional_keywords || []),
+    ...(result.subject_matter_keywords || []),
+    ...(result.mandatory_qualifications || []),
+    ...(result.preferred_qualifications || []),
+  ]);
+  const missing = roleSkills.filter((skill) => !candidateSkills.some((owned) => owned.includes(skill.toLowerCase()) || skill.toLowerCase().includes(owned)));
+  const signals = [];
+  if (result.required_experience_years != null && result.required_experience_years > candidate.experience_profile.years_full_time) {
+    signals.push(`Build toward ${result.required_experience_years}+ years of relevant full-time experience, ideally with progressively greater ownership.`);
+  } else if (result.preferred_experience_years != null && result.preferred_experience_years > candidate.experience_profile.years_full_time) {
+    signals.push(`Accumulate roughly ${result.preferred_experience_years} years of directly relevant analytical or research delivery.`);
+  }
+  if (missing.length) signals.push(`Develop demonstrable evidence in ${missing.slice(0, 5).join(", ")}.`);
+  if ((result.language_requirements || []).length) signals.push(`Maintain or document the role's language expectations: ${textList(result.language_requirements)}.`);
+  signals.push("Seek work products you can point to: analysis, models, dashboards, reports, or recommendations used by decision makers.");
+  return unique(signals).slice(0, 4);
+}
+
+function careerNarrative(result) {
+  const functions = unique(result.functional_keywords).slice(0, 3);
+  const subjects = unique(result.subject_matter_keywords).slice(0, 3);
+  const functionPhrase = functions.length ? functions.join(", ") : "evidence-led analysis";
+  const subjectPhrase = subjects.length ? subjects.join(", ") : "institutional decision making";
+  return `This role makes a possible direction more specific: build a career combining ${functionPhrase} with subject expertise in ${subjectPhrase}, producing evidence that informs consequential decisions.`;
+}
+
+function renderFutureDirection() {
+  const threshold = 80;
+  const roles = monitorAssessments.filter((result) => result.long_term_score >= threshold);
+  const section = document.getElementById("future-direction");
+  const container = document.getElementById("future-direction-roles");
+  const empty = document.getElementById("future-direction-empty");
+  section.hidden = false;
+  container.replaceChildren();
+  empty.hidden = roles.length !== 0;
+  setText("future-direction-count", `${roles.length} role${roles.length === 1 ? "" : "s"} at 80+`);
+  for (const result of roles) {
+    const article = document.createElement("article");
+    article.className = "future-role";
+    const header = document.createElement("div");
+    header.className = "future-role-header";
+    const identity = document.createElement("div");
+    const institution = document.createElement("span");
+    institution.textContent = result.institution;
+    const title = document.createElement("h3");
+    title.textContent = result.title;
+    identity.append(institution, title);
+    const score = document.createElement("strong");
+    score.textContent = `${result.long_term_score.toFixed(1)}`;
+    score.setAttribute("aria-label", `Long-Term Fit ${result.long_term_score.toFixed(1)} out of 100`);
+    header.append(identity, score);
+
+    const grid = document.createElement("div");
+    grid.className = "future-role-grid";
+    const build = document.createElement("section");
+    const buildTitle = document.createElement("h4");
+    buildTitle.textContent = "What to accumulate over 3–5 years";
+    const list = document.createElement("ul");
+    for (const signal of futureCapabilitySignals(result)) {
+      const item = document.createElement("li");
+      item.textContent = signal;
+      list.appendChild(item);
+    }
+    build.append(buildTitle, list);
+    const narrative = document.createElement("section");
+    const narrativeTitle = document.createElement("h4");
+    narrativeTitle.textContent = "How this sharpens the career narrative";
+    const narrativeText = document.createElement("p");
+    narrativeText.textContent = careerNarrative(result);
+    const evidence = document.createElement("p");
+    evidence.className = "narrative-evidence";
+    evidence.textContent = `JD evidence: ${textList(unique([...(result.functional_keywords || []), ...(result.subject_matter_keywords || [])]).slice(0, 7))}.`;
+    narrative.append(narrativeTitle, narrativeText, evidence);
+    grid.append(build, narrative);
+    article.append(header, grid);
+    container.appendChild(article);
+  }
 }
 
 function vacancyInput() {
@@ -563,6 +699,7 @@ function renderMonitorResults() {
     item.append(heading, body);
     digest.appendChild(item);
   });
+  renderFutureDirection();
 }
 
 function updateThresholdLabels() {
@@ -666,6 +803,7 @@ document.getElementById("monitor-button").addEventListener("click", async () => 
 
 document.getElementById("current-threshold").addEventListener("input", updateThresholdLabels);
 document.getElementById("long-term-threshold").addEventListener("input", updateThresholdLabels);
+document.getElementById("career-intent").addEventListener("input", updateIntentSignals);
 
 document.getElementById("cv-upload").addEventListener("change", async (event) => {
   const file = event.target.files[0];
