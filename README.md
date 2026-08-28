@@ -60,6 +60,43 @@ Each vacancy can then receive:
 
 The aim is not simply to rank jobs by keyword similarity, but to turn vacancy information into a more useful career decision.
 
+## Optional LLM-Assisted Analysis
+
+The public repository also includes a small optional AI layer that uses the
+OpenAI Responses API and Structured Outputs to convert vacancy text into a
+consistent JSON record. It extracts:
+
+* responsibilities
+* minimum experience
+* required skills
+* preferred qualifications
+* education requirements
+* longer-term career signals
+* ambiguous wording that may need review
+
+This layer complements the deterministic assessment rather than silently
+replacing it. The default `demo.py` remains fully local, reproducible, and free
+of network or API requirements. The separate AI demo makes the distinction
+between rule-based scoring and LLM-assisted semantic extraction explicit.
+
+To run the optional demo:
+
+```bash
+pip install -e ".[ai]"
+export OPENAI_API_KEY="your-api-key"
+python llm_demo.py
+```
+
+On Windows PowerShell, set the key for the current session with:
+
+```powershell
+$env:OPENAI_API_KEY="your-api-key"
+python llm_demo.py
+```
+
+`OPENAI_MODEL` can optionally override the default model. API credentials are
+read from the environment and must never be committed to the repository.
+
 ## Why Two Scores?
 
 A single job-match score can be misleading.
@@ -290,12 +327,14 @@ Readable output
 career-opportunity-monitor-public/
 │
 ├── demo.py
+├── llm_demo.py
 ├── pyproject.toml
 ├── README.md
 │
 ├── src/
 │   └── job_monitor/
 │       ├── analysis.py
+│       ├── llm_analysis.py
 │       ├── models.py
 │       ├── notification_content.py
 │       ├── preference_filter.py
@@ -319,6 +358,14 @@ Contains the main vacancy-assessment logic, including:
 * long-term scoring
 * recommendation logic
 
+### `llm_analysis.py`
+
+Provides an optional LLM-assisted information-extraction layer. It sends
+vacancy text to the OpenAI Responses API, requests a strict JSON schema, and
+returns structured responsibilities, requirements, career signals, and
+ambiguities. The API client can be injected, so the behavior is testable
+without making network calls.
+
 ### `models.py`
 
 Defines the main data structures used for vacancies, configuration, requirement signals, hard-filter decisions, and vacancy assessments.
@@ -340,6 +387,11 @@ Provides report-rendering utilities for structured assessment results.
 ### `demo.py`
 
 Creates a fictional candidate and synthetic vacancies, runs them through the real assessment logic, and prints the resulting current-fit and long-term evaluations.
+
+### `llm_demo.py`
+
+Runs the optional LLM extractor on one synthetic vacancy and prints the
+structured result. It requires the optional `ai` dependency and an API key.
 
 ## Production Workflow
 
